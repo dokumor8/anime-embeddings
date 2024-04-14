@@ -21,28 +21,50 @@ def main():
 
     # TODO add groupby by animes
     # TODO analyze average length of 512 tokens in symbols and split that
+    ids = []
+    all_embeddings = []
     df_grouped = df.groupby("anime_uid")
     for anime_id, data in df_grouped:
-        for index, row in data.iterrows():
-            ani_id = row["anime_uid"]
-            text = row["text"]
-            embeddings = get_embeddings(model, text)
-            # tokens = model.tokenizer.tokenize(text)
-            # print(f"Index: {index}, id: {ani_id}, tokens: {len(tokens)}")
-            # print(tokens)
-            emb_list = all_embeddings.get(ani_id, [])
-            emb_list.append(embeddings)
-            all_embeddings[ani_id] = emb_list
+        ids.append(anime_id)
 
-    print(all_embeddings)
-    for k, v in all_embeddings.items():
+        texts = data["text"].to_list()
+        embeddings = model.encode(texts, convert_to_numpy=True)
+        all_embeddings.append(embeddings)
+        # for index, row in data.iterrows():
+        #     # ani_id = row["anime_uid"]
+        #     text = row["text"]
+        #     embeddings = get_embeddings(model, text)
+        #     # tokens = model.tokenizer.tokenize(text)
+        #     # print(f"Index: {index}, id: {ani_id}, tokens: {len(tokens)}")
+        #     # print(tokens)
+        #     emb_list = all_embeddings.get(ani_id, [])
+        #     emb_list.append(embeddings)
+        #     all_embeddings[ani_id] = emb_list
+
+    for i, v in enumerate(all_embeddings):
         average = np.mean(v, axis=0)
-        all_embeddings[k] = average
+        average = average / np.linalg.norm(average)
+        all_embeddings[i] = average
         # average = np.zeros_like(v[0])
-        # for emb in v:
-    print(all_embeddings)
-    with open("saved_emb.pkl", "wb") as f:
-        pickle.dump(all_embeddings, f)
+
+    print(type(all_embeddings))
+    print(len(all_embeddings))
+    for x in all_embeddings:
+        print(x.shape)
+    print(len(all_embeddings[0]))
+    print(all_embeddings[0].shape)
+    
+    all_embeddings = np.array(all_embeddings)
+    print(all_embeddings.shape)
+    print(ids)
+    # for k, v in all_embeddings.items():
+    #     average = np.mean(v, axis=0)
+    #     all_embeddings[k] = average
+    #     # average = np.zeros_like(v[0])
+    #     # for emb in v:
+    # print(all_embeddings)
+    # with open("saved_emb.pkl", "wb") as f:
+    #     pickle.dump(all_embeddings, f)
 
 
 main()
