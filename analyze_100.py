@@ -16,7 +16,7 @@ def get_embeddings(model, text):
 
 
 def main():
-    df = pd.read_csv("./data/reviews_100.csv")
+    df = pd.read_csv("./data/review_clean.csv")
     model = FlagModel("./model", use_fp16=True)
     all_embeddings = {}
 
@@ -34,12 +34,12 @@ def main():
             print(anime_id)
 
             texts = data["text"].to_list()
-            embeddings = model.encode(texts, convert_to_numpy=True, batch_size=16)
+            embeddings = model.encode(texts, convert_to_numpy=True, batch_size=64)
             average = np.mean(embeddings, axis=0)
             average = average / np.linalg.norm(average)
             all_embeddings.append(average)
 
-            np.save(f"data/embs/emb_{anime_id}.npy", average)
+            # np.save(f"data/embs/emb_{anime_id}.npy", average)
         # for index, row in data.iterrows():
         #     # ani_id = row["anime_uid"]
         #     text = row["text"]

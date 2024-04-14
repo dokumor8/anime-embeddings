@@ -18,6 +18,7 @@ def get_scores(ani_id):
 
     sim_list = list(zip(similarities, ids))
     sim_list.sort(reverse=True)
+    sim_list = sim_list[:100]
     # similarity_dict = {}
     # for aniid, sim in zip(ids, similarities):
         # similarity_dict[aniid] = sim
@@ -52,16 +53,17 @@ def run():
     name_to_id = load_json("name_to_id.json")
     id_to_name = load_json("id_to_name.json")
 
-    query_name = "Saint Seiya: Meiou Hades Meikai-hen"
+    query_name = "K-On!"
+    query_name = "Kimetsu no Yaiba"
     query_id = name_to_id[query_name]
     print(query_id)
 
     sim_dict = get_scores(query_id)
     print(sim_dict)
     for sim, aniid in sim_dict:
-        name = id_to_name.get(aniid, "No name")
+        name = id_to_name.get(str(aniid), "No name")
 
-        print({sim}, name)
+        print({sim}, aniid, name)
 
 
 run()
