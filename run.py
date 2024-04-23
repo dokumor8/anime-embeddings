@@ -7,21 +7,28 @@ def load_json(path):
         return json.load(f)
 
 
-def get_scores(ani_id):
+def get_scores(ani_id, ani_id_2=None):
     embs = np.load("data/all_embs.npy")
     # idx to aniid
     ids = load_json("data/ids.json")
     aniid_to_index = {x: i for i, x in enumerate(ids)}
     emb_index = aniid_to_index[ani_id]
     query_emb = embs[emb_index, :]
-    similarities = query_emb @ embs.T
+
+    if ani_id_2 is not None:
+        emb_index_2 = aniid_to_index[ani_id_2]
+        query_emb_2 = embs[emb_index_2, :]
+        query_emb = (query_emb + query_emb_2) / 2
+
+    mid_anime = embs.mean(axis=0)
+    similarities = mid_anime @ embs.T
 
     sim_list = list(zip(similarities, ids))
     sim_list.sort(reverse=True)
     sim_list = sim_list[:100]
     # similarity_dict = {}
     # for aniid, sim in zip(ids, similarities):
-        # similarity_dict[aniid] = sim
+    # similarity_dict[aniid] = sim
     return sim_list
 
 
@@ -53,12 +60,13 @@ def run():
     name_to_id = load_json("name_to_id.json")
     id_to_name = load_json("id_to_name.json")
 
-    query_name = "K-On!"
+    query_name = "Azumanga Daioh"
+    query_id1 = name_to_id[query_name]
     query_name = "Kimetsu no Yaiba"
-    query_id = name_to_id[query_name]
-    print(query_id)
+    query_id2 = name_to_id[query_name]
+    print(query_id1)
 
-    sim_dict = get_scores(query_id)
+    sim_dict = get_scores(query_id1, query_id2)
     print(sim_dict)
     for sim, aniid in sim_dict:
         name = id_to_name.get(str(aniid), "No name")

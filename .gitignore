@@ -2,3 +2,5 @@ venv
 data
 archive
 model
+
+.ipynb_checkpoints
