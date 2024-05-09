@@ -20,8 +20,8 @@ def get_embeddings_of_file(model, path):
     df = pd.read_csv(path)
 
     texts = df["text"].to_list()
-    texts = texts[:128]
-    embeddings = model.encode(texts, convert_to_numpy=True, batch_size=128)
+    texts = texts[:32]
+    embeddings = model.encode(texts, convert_to_numpy=True, batch_size=32)
     average = np.mean(embeddings, axis=0)
     average = average / np.linalg.norm(average)
     return average
@@ -89,10 +89,13 @@ def main2():
     embs = []
     for root, subdirs, files in os.walk("data/split"):
         for name in files:
-            emb_path = f"data/separa_embs/{root}/emb_{ani_id}.npy"
-            os.path.isfile(emb_path)
             ani_id = name[8:]
             ani_id = ani_id[:-4]
+            dir_num = os.path.basename(root)
+            emb_path = f"data/separa_embs/{dir_num}/emb_{ani_id}.npy"
+            if os.path.isfile(emb_path):
+                print(f"Skipped {ani_id}")
+                continue
             full_path = os.path.join(root, name)
             emb = get_embeddings_of_file(model, full_path)
             embs.append(emb)
