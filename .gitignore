@@ -4,3 +4,6 @@ archive
 model
 
 .ipynb_checkpoints
+
+webvenv
+*.pyc

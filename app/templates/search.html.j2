@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <header></header>
+    <main>
+      <h3> 
+        Search Contacts
+      </h3>
+      <form method="POST">
+        <input name="search" type="search">
+      </form>
+      
+      <table class="table">
+          <thead>
+          <tr>
+            <th>Name</th>
+          </tr>
+          </thead>
+          <tbody id="search-results">
+            {% for result in results %}
+            <tr>
+                <td>{{ result.title }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </main>
+    <footer></footer>
+  </body>
+</html>
