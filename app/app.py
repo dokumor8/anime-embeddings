@@ -33,12 +33,58 @@ def load_ctx():
 ctx = load_ctx()
 
 
+def get_top_scores(ctx, ani_ids, synopsis_weight):
+
+    emb_matrix = ctx["review_embeddings"]
+    if synopsis_weight > 0:
+        if synopsis_weight > 1:
+            synopsis_weight = 1
+        emb_matrix = (1 - synopsis_weight) * ctx["review_embeddings"] + synopsis_weight * ctx["synopsis_embeddings"]
+
+    query_embs = np.zeros((len(ani_ids), ctx["review_embeddings"].shape[1]))
+    for i, ani_id in enumerate(ani_ids):
+        rid = ctx["aid_to_rid"][str(ani_id)]
+        query_emb = emb_matrix[rid, :]
+        query_embs[i, :] = query_emb
+
+    average_emb = np.mean(query_embs, axis=0)
+    average_emb = average_emb / np.linalg.norm(average_emb)
+    similarities = average_emb @ emb_matrix.T
+
+    sim_list = list(zip(similarities, ctx["rid_to_aid"].values()))
+    sim_list.sort(reverse=True)
+    sim_list = sim_list[:20]
+
+    return sim_list
+
+
 @app.route('/')
 def index():
     return render_template('search.html.j2', results=[])
 
 
-@app.route('/', methods=['POST'])
+@app.route('/get_similar/<int:anime_id>')
+def get_similar(anime_id):
+    similar_ids = get_top_scores(ctx, [anime_id], synopsis_weight=0.1)
+
+    conn = sqlite3.connect('data/anime_info.db')  # Connect to the SQLite database
+    cursor = conn.cursor()  # Create a cursor
+    # similar_ids = get_similar_ids(anime_id)
+    # Fetch the titles of the anime corresponding to the similar_ids
+    similar_results = []
+    for sim, aniid in similar_ids:
+        print()
+        cursor.execute("SELECT anime_id, title FROM anime WHERE anime_id = ?", (aniid,))
+        result = cursor.fetchone()
+        if result:
+            # result.append(sim)
+            sim_result = (*result, sim)
+            similar_results.append(sim_result)
+
+    return render_template('search.html.j2', results=similar_results, context='similar')
+
+
+@app.route('/', methods=['POST', 'GET'])
 def update_search():
     conn = sqlite3.connect('data/anime_info.db')  # Connect to the SQLite database
     cursor = conn.cursor()  # Create a cursor
@@ -64,7 +110,7 @@ def update_search():
 
     results = partial_results[:20]
 
-    return render_template('search.html.j2', results=results)
+    return render_template('search.html.j2', results=results, context='search')
 
 
 @click.command()

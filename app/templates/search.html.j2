@@ -8,7 +8,7 @@
     <header></header>
     <main>
       <h3> 
-        Search Contacts
+        Search similar anime 
       </h3>
       <form method="POST">
         <input name="search" type="search">
@@ -18,12 +18,18 @@
           <thead>
           <tr>
             <th>Name</th>
+            {% if context == 'similar' %}
+            <td>Similarity</td>
+            {% endif %}
           </tr>
           </thead>
           <tbody id="search-results">
             {% for result in results %}
             <tr>
-                <td>{{ result[1] }}</td>
+              <td><a href="{{ url_for('get_similar', anime_id=result[0]) }}">{{ result[1] }}</a></td>
+              {% if context == 'similar' %}
+              <td>{{ result[2] }}</td>
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
