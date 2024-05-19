@@ -4,8 +4,40 @@
     <meta charset="utf-8">
     <title>Similar Anime</title>
     <style type="text/css">body{margin:40px
-auto;max-width:650px;line-height:1.6;font-size:18px;color:#444;padding:0
+auto;max-width:1000px;line-height:1.6;font-size:18px;color:#444;padding:0
 10px}h1,h2,h3{line-height:1.2}</style>
+    <style>
+      .container {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+      }
+      .card {
+          width: calc(15% - 20px);
+          margin: 10px;
+          text-align: center;
+          border: 1px solid #ccc; /* Thin border around each card */
+          padding: 10px; /* Optional: Adds some space inside the border */
+      }
+      .card img {
+          width: 100%;
+          height: auto;
+          cursor: pointer;
+      }
+      .card a {
+          display: block;
+          margin-top: 10px;
+          text-decoration: none;
+          color: #007BFF; /* Blue color for the link */
+      }
+      .card .show-name {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 100%;
+          font-size: 14px;
+      }
+  </style>
   </head>
   <body>
     <header></header>
@@ -21,31 +53,21 @@ auto;max-width:650px;line-height:1.6;font-size:18px;color:#444;padding:0
         <input name="search" type="search">
         <input type="submit" value="Search">
       </form>
+
+      <div class="container">
+      {% for result in results %}
+        <div class="card">
+            <a href="{{ url_for('get_similar', anime_id=result[0]) }}">
+                <img src={{ result[3] }} alt={{ result[1] }}>
+            </a>
+            <div class="show-name">{{ result[1] }}</div>
+            <a href={{ result[2] }} target="_blank">Open on MAL</a>
+        </div>
+        <!-- Repeat the card structure for each anime show -->
+
+      {% endfor %}
+      </div>
       
-      <table class="table">
-          <thead>
-          <tr>
-            {% if context == 'similar' or context == 'search' %}
-            <th>Name</th>
-            <th>Open on MyAnimeList</th>
-            {% endif %}            
-            {% if context == 'similar' %}
-            <th>Similarity</th>
-            {% endif %}
-          </tr>
-          </thead>
-          <tbody id="search-results">
-            {% for result in results %}
-            <tr>
-              <td><a href="{{ url_for('get_similar', anime_id=result[0]) }}">{{ result[1] }}</a></td>
-              <td><a href={{ result[2] }}><img src={{ result[3] }} width=100></a></td>
-              {% if context == 'similar' %}
-              <td>{{ result[4] }}</td>
-              {% endif %}
-            </tr>
-            {% endfor %}
-          </tbody>
-      </table>
     </main>
     <footer></footer>
   </body>
