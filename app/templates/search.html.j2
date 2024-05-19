@@ -13,14 +13,22 @@ auto;max-width:650px;line-height:1.6;font-size:18px;color:#444;padding:0
       <h3> 
         Search similar anime 
       </h3>
+      <ul>
+        <li>Search for an anime by its name</li>
+        <li>Click on a search result to find similar anime</li>
+      </ul>
       <form action="/" method="POST">
         <input name="search" type="search">
+        <input type="submit" value="Search">
       </form>
       
       <table class="table">
           <thead>
           <tr>
+            {% if context == 'similar' or context == 'search' %}
             <th>Name</th>
+            <th>Open on MyAnimeList</th>
+            {% endif %}            
             {% if context == 'similar' %}
             <th>Similarity</th>
             {% endif %}
@@ -30,8 +38,9 @@ auto;max-width:650px;line-height:1.6;font-size:18px;color:#444;padding:0
             {% for result in results %}
             <tr>
               <td><a href="{{ url_for('get_similar', anime_id=result[0]) }}">{{ result[1] }}</a></td>
+              <td><a href={{ result[2] }}><img src={{ result[3] }} width=100></a></td>
               {% if context == 'similar' %}
-              <td>{{ result[2] }}</td>
+              <td>{{ result[4] }}</td>
               {% endif %}
             </tr>
             {% endfor %}

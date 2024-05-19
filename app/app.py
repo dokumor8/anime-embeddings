@@ -19,14 +19,10 @@ def load_ctx():
     embs_synopsis = np.load("ignored/syn_embs.npy")
     rid_to_aid = load_json("ignored/idx_to_ani2.json")
     aid_to_rid = load_json("ignored/ani_to_idx2.json")
-    name_to_aid = load_json("ignored/name_to_id.json")
-    aid_to_name = load_json("ignored/id_to_name.json")
     ctx["review_embeddings"] = embs
     ctx["synopsis_embeddings"] = embs_synopsis
     ctx["rid_to_aid"] = rid_to_aid
     ctx["aid_to_rid"] = aid_to_rid
-    ctx["name_to_aid"] = name_to_aid
-    ctx["aid_to_name"] = aid_to_name
     return ctx
 
 
@@ -73,7 +69,7 @@ def get_similar(anime_id):
     # Fetch the titles of the anime corresponding to the similar_ids
     similar_results = []
     for sim, aniid in similar_ids:
-        cursor.execute("SELECT anime_id, title FROM anime WHERE anime_id = ?", (aniid,))
+        cursor.execute("SELECT anime_id, title, url, main_picture FROM anime WHERE anime_id = ?", (aniid,))
         result = cursor.fetchone()
         if result:
             # result.append(sim)
@@ -93,7 +89,7 @@ def update_search():
     # Construct the SQL query for partial matches
 
     partial_query = """
-    SELECT anime_id, title
+    SELECT anime_id, title, url, main_picture
     FROM anime
     WHERE anime_id IN (SELECT anime_id FROM popular_anime)
     AND (title LIKE ? OR title_english LIKE ? OR title_japanese LIKE ? OR title_synonyms LIKE ?)
