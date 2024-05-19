@@ -73,7 +73,6 @@ def get_similar(anime_id):
     # Fetch the titles of the anime corresponding to the similar_ids
     similar_results = []
     for sim, aniid in similar_ids:
-        print()
         cursor.execute("SELECT anime_id, title FROM anime WHERE anime_id = ?", (aniid,))
         result = cursor.fetchone()
         if result:
