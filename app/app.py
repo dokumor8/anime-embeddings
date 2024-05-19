@@ -63,7 +63,7 @@ def index():
     return render_template('search.html.j2', results=[])
 
 
-@app.route('/get_similar/<int:anime_id>')
+@app.route('/get_similar/<int:anime_id>', methods=['POST', 'GET'])
 def get_similar(anime_id):
     similar_ids = get_top_scores(ctx, [anime_id], synopsis_weight=0.1)
 
