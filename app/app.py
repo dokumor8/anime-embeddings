@@ -92,23 +92,19 @@ def update_search():
     search_string = request.form["search"]
 
     # Construct the SQL query for partial matches
+
     partial_query = """
-    SELECT a.anime_id, a.title
-    FROM anime a
-    JOIN popular_anime p ON a.anime_id = p.anime_id
-    WHERE a.title LIKE ? OR a.title_english LIKE ? OR a.title_japanese LIKE ? OR a.title_synonyms LIKE ?
-    LIMIT 20
+    SELECT anime_id, title
+    FROM anime
+    WHERE anime_id IN (SELECT anime_id FROM popular_anime)
+    AND (title LIKE ? OR title_english LIKE ? OR title_japanese LIKE ? OR title_synonyms LIKE ?)
+    LIMIT 50
     """
 
-    # partial_query = """
-    # SELECT anime_id,title FROM anime
-    # WHERE title LIKE ? OR title_english LIKE ? OR title_japanese LIKE ? OR title_synonyms LIKE ?
-    # LIMIT 20
-    # """
     cursor.execute(partial_query, (f"%{search_string}%", f"%{search_string}%", f"%{search_string}%", f"%{search_string}%"))
     partial_results = cursor.fetchall()  # Fetch partial matches
 
-    results = partial_results[:20]
+    results = partial_results
 
     return render_template('search.html.j2', results=results, context='search')
 
