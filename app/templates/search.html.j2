@@ -1,74 +1,167 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
-    <meta charset="utf-8">
-    <title>Similar Anime</title>
-    <style type="text/css">body{margin:40px
-auto;max-width:1000px;line-height:1.6;font-size:18px;color:#444;padding:0
-10px}h1,h2,h3{line-height:1.2}</style>
-    <style>
-      .container {
+
+<head>
+  <meta charset="utf-8">
+  <title>Similar Anime</title>
+  <style type="text/css">
+    body {
+      margin: 40px auto;
+      max-width: 1000px;
+      line-height: 1.6;
+      font-size: 18px;
+      color: #444;
+      padding: 0 10px
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.2
+    }
+  </style>
+  <style>
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: start;
+    }
+
+    .container2 {
+      display: flex;
+      height: 100vh;
+    }
+
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #f0f0f0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      width: calc(17% - 20px);
+      margin: 5px;
+      text-align: center;
+      border: 1px solid #ccc;
+      /* Thin border around each card */
+      padding: 5px;
+      /* Optional: Adds some space inside the border */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 350px; /* Set a fixed height for the card */
+    }
+
+    .card img {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+    }
+
+    .card a {
+      display: block;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #007BFF;
+      
+      /* Blue color for the link */
+    }
+    
+
+    .card .show-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit to 3 lines */
+        -webkit-box-orient: vertical;
+        width: 100%;
+        font-size: 14px;
+        height: 70px;
+    }
+
+    .card-buttons {
           display: flex;
-          flex-wrap: wrap;
           justify-content: space-between;
       }
-      .card {
-          width: calc(15% - 20px);
-          margin: 10px;
+
+      .card-button {
+          background-color: #007BFF;
+          color: white;
+          border: none;
+          padding: 5px 10px;
           text-align: center;
-          border: 1px solid #ccc; /* Thin border around each card */
-          padding: 10px; /* Optional: Adds some space inside the border */
-      }
-      .card img {
-          width: 100%;
-          height: auto;
-          cursor: pointer;
-      }
-      .card a {
-          display: block;
-          margin-top: 10px;
           text-decoration: none;
-          color: #007BFF; /* Blue color for the link */
-      }
-      .card .show-name {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          width: 100%;
+          display: inline-block;
           font-size: 14px;
+          margin: 2px 1px;
+          cursor: pointer;
+          border-radius: 5px;
+      }
+
+      .card-button:hover {
+          background-color: #0056b3;
       }
   </style>
-  </head>
-  <body>
-    <header></header>
-    <main>
-      <h3> 
-        Search similar anime 
-      </h3>
-      <ul>
-        <li>Search for an anime by its name</li>
-        <li>Click on a search result to find similar anime</li>
-      </ul>
-      <form action="/" method="POST">
-        <input name="search" type="search">
-        <input type="submit" value="Search">
-      </form>
+</head>
 
-      <div class="container">
-      {% for result in results %}
-        <div class="card">
-            <a href="{{ url_for('get_similar', anime_id=result[0]) }}">
-                <img src={{ result[3] }} alt={{ result[1] }}>
-            </a>
-            <div class="show-name">{{ result[1] }}</div>
-            <a href={{ result[2] }} target="_blank">Open on MAL</a>
-        </div>
-        <!-- Repeat the card structure for each anime show -->
+<body>
+  <header></header>
+  <main>
 
-      {% endfor %}
+    <div class="container2">
+      <div class="sidebar">
+        <h2>Selected Animes</h2>
+        <!-- This is where you will populate the selected animes -->
+        <div class="anime-input">Anime Title 1</div>
+        <div class="anime-input">Anime Title 2</div>
+        <!-- Add more anime inputs as needed -->
       </div>
-      
-    </main>
-    <footer></footer>
-  </body>
+      <div class="content">
+        <!-- Your search bar and other content goes here -->
+        <form action="/r" method="GET" autocomplete="off">
+          <input name="search" type="search"  placeholder="Enter anime name">
+          <input type="submit" value="Search">
+        </form>
+        <h3>
+          Similar anime search
+        </h3>
+        <ul>
+          <li>Enter anime name</li>
+          <li>Click on a search result to find similar anime</li>
+        </ul>
+
+
+        <div class="container">
+            {% for result in results %}
+            <div class="card">
+                <a href="{{ url_for('get_similar', anime_id=result[0]) }}">
+                    <img src={{ result[3] }} alt={{ result[1] }}>
+                </a>
+                <div class="show-name">{{ result[1] }}</div>
+                <a href={{ result[2] }} target="_blank">Open on MAL</a>
+                <div class="card-buttons">
+                    <button class="card-button" onclick="addAnimeToList('{{ result[0] }}')">+</button>
+                    <button class="card-button" onclick="findSimilarAnime('{{ result[0] }}')">S</button>
+                </div>
+            </div>
+            <!-- Repeat the card structure for each anime show -->
+
+            {% endfor %}
+        </div>
+
+      </div>
+    </div>
+
+
+  </main>
+  <footer></footer>
+</body>
+
 </html>
