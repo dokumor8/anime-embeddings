@@ -40,6 +40,7 @@
 
     .sidebar {
       width: 250px;
+      flex-grow: 1;
       background-color: #f0f0f0;
       padding: 20px;
       box-sizing: border-box;
@@ -117,11 +118,20 @@
 
     <div class="container2">
       <div class="sidebar">
-        <h2>Selected Animes</h2>
-        <!-- This is where you will populate the selected animes -->
-        <div class="anime-input">Anime Title 1</div>
-        <div class="anime-input">Anime Title 2</div>
-        <!-- Add more anime inputs as needed -->
+        <a href="{{ url_for('update_search') }}">
+        <h2>Find Similar Anime</h2>
+        </a>
+        {% if input_ids %}
+        <a class="button" href="{{ url_for('update_search', start=1 )}}">Find similar to these!</a>
+        {% endif %}
+
+        {% for input_id in input_ids %}
+        <div class="anime-input">
+            <div class="input-name">{{ input_id[1] }}</div>
+            <a href="{{ url_for('update_search', remove=input_id[0]) }}">x</a>
+            <a href={{ input_id[2] }} target="_blank">MAL</a>
+        </div>
+        {% endfor %}
       </div>
       <div class="content">
         <!-- Your search bar and other content goes here -->
@@ -137,22 +147,17 @@
           <li>Click on a search result to find similar anime</li>
         </ul>
 
-
         <div class="container">
             {% for result in results %}
             <div class="card">
-                <a href="{{ url_for('get_similar', anime_id=result[0]) }}">
-                    <img src={{ result[3] }} alt={{ result[1] }}>
-                </a>
+                <img src={{ result[3] }} alt={{ result[1] }}>
                 <div class="show-name">{{ result[1] }}</div>
                 <a href={{ result[2] }} target="_blank">Open on MAL</a>
                 <div class="card-buttons">
-                    <button class="card-button" onclick="addAnimeToList('{{ result[0] }}')">+</button>
-                    <button class="card-button" onclick="findSimilarAnime('{{ result[0] }}')">S</button>
+                  <a class="button" href="{{ url_for('update_search', i=result[0]) }}">Add</a>
+                  <a class="button" href="{{ url_for('update_search', s=result[0]) }}">Like this</a>
                 </div>
             </div>
-            <!-- Repeat the card structure for each anime show -->
-
             {% endfor %}
         </div>
 
