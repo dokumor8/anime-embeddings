@@ -172,7 +172,7 @@ def update_search():
         result = cursor.fetchone()
         if result:
             input_ids.append(result)
-    return render_template("search.html.j2", results=results, input_ids=input_ids)
+    return render_template("search.html.j2", results=results, input_ids=input_ids, search_string=search_string)
 
 
 @app.route("/")
